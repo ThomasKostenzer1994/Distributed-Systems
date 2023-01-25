@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Class-Path: resteasy-servlet-initializer-3.15.3.Final.jar resteasy-clien
+ t-3.15.3.Final.jar resteasy-jaxrs-3.15.3.Final.jar jetty-servlet-9.3.14
+ .v20161028.jar jetty-security-9.3.14.v20161028.jar jetty-server-9.3.14.
+ v20161028.jar javax.servlet-api-4.0.1.jar jboss-jaxrs-api_2.1_spec-2.0.
+ 1.Final.jar jboss-jaxb-api_2.3_spec-2.0.1.Final.jar reactive-streams-1.
+ 0.3.jar jakarta.validation-api-2.0.2.jar jboss-annotations-api_1.3_spec
+ -2.0.1.Final.jar jakarta.activation-1.2.2.jar httpclient-4.5.13.jar com
+ mons-io-2.5.jar jcip-annotations-1.0-1.jar jboss-logging-3.4.1.Final.ja
+ r commons-codec-1.15.jar httpcore-4.4.13.jar commons-logging-1.2.jar je
+ tty-http-9.3.14.v20161028.jar jetty-io-9.3.14.v20161028.jar jetty-util-
+ 9.3.14.v20161028.jar
+Main-Class: REST.server.computation.ComputationApp
+
