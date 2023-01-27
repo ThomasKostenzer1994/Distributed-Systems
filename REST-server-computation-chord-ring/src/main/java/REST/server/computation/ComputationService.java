@@ -1,11 +1,11 @@
 package REST.server.computation;
 
-import javax.ws.rs.GET;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
+import javax.ws.rs.core.UriBuilder;
 import java.util.List;
 
 @Path("/computationservice")
@@ -14,12 +14,25 @@ public class ComputationService implements ComputationServiceInterface {
     private int chordAddress;
     private int numberOfFingers;
     private List<Integer> fingers;
+    private static String serverPathPrefix;
+    private static int serverPort;
 
-    public ComputationService(int chordAddress, int knownChordNode, int numberOfFingers) {
+    public ComputationService(String serverPathPrefix, int serverPort) {
+        ComputationService.serverPathPrefix = serverPathPrefix;
+        ComputationService.serverPort = serverPort;
+    }
+
+    public ComputationService(int chordAddress, int knownChordNode, int numberOfFingers, String serverPathPrefix, int serverPort) {
         this.chordAddress = chordAddress;
         this.numberOfFingers = numberOfFingers;
-        fingers = new ArrayList<>();
+        ComputationService.serverPathPrefix = serverPathPrefix;
+        ComputationService.serverPort = serverPort;
+
         addingItselfToChordRing(knownChordNode);
+
+    }
+
+    public void initChordNode() {
 
     }
 
@@ -27,15 +40,11 @@ public class ComputationService implements ComputationServiceInterface {
 
     }
 
+    //private void initializeFingerTable()
 
-
-
-
-    @GET
-    @Path("/calculate")
-    @Produces({MediaType.APPLICATION_JSON})
-    public String calculate(@QueryParam("n1") String n1, @QueryParam("n2") String n2, @QueryParam("op") String op) {
-        try {
+    @Override
+    public String addNode(String address) {
+/*        try {
             System.out.println("Got request from client: " + n1 + " " + n2 + " " + op);
             int num1 = Integer.parseInt(n1);
             int num2 = Integer.parseInt(n2);
@@ -61,11 +70,7 @@ public class ComputationService implements ComputationServiceInterface {
         }
         catch (Exception ex) {
             return "\"Error: Could not understand the input parameters\"";
-        }
-    }
-
-    @Override
-    public String addNode(String address) {
+        }*/
         return null;
     }
 
@@ -92,5 +97,12 @@ public class ComputationService implements ComputationServiceInterface {
     @Override
     public String sendMessage(String key, String message) {
         return null;
+    }
+
+    public ComputationServiceInterface createProxyObject(int node) {
+        // Create client
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://localhost:" + serverPort + serverPathPrefix + "/" + node));
+        return target.proxy(ComputationServiceInterface.class);
     }
 }

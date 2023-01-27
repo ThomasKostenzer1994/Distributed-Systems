@@ -14,18 +14,21 @@ public interface ComputationServiceInterface {
     @Produces({ MediaType.APPLICATION_JSON })
     // This is used for adding a node with the given address.
     // It will change the successor of one node and the predecessor of another one.
+    // n.join(n')
     public String addNode(@QueryParam("address") String address);
 
     @GET
     @Path("/lookup_successor")
     @Produces({ MediaType.APPLICATION_JSON })
     // This is used to look up the successor of an address.
+    // n.find_successor(id)
     public String lookup_successor(@QueryParam("address") String address);
 
     @GET
     @Path("/lookup_predecessor")
     @Produces({ MediaType.APPLICATION_JSON })
     // This is used to look up the predecessor of an address.
+    // n.find_predecessor(id)
     public String lookup_predecessor(@QueryParam("address") String address);
 
     @GET
