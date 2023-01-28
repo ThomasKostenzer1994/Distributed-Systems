@@ -47,7 +47,7 @@ public class ComputationApp extends Application {
         }
 
         // Create log file
-        try {
+       try {
             File logfile = new File("/var/log/computation-service.log");
             FileOutputStream fileOutputStream = new FileOutputStream(logfile);
             PrintStream printStream = new PrintStream(fileOutputStream);
@@ -78,37 +78,38 @@ public class ComputationApp extends Application {
             }
         }
 
-        // ToDo do the initialization
-
         // Create singleton of the computation service
         String additionalText = firstNode ? " and is the first node" : " and uses node " + chordNodeInt;
         System.out.println("Starting computation service of node " + chordAddressInt + additionalText);
-        singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
 
-        Server server = new Server(SERVER_PORT);
-
-        // Setup the basic Application "context" at "/".
-        // This is also known as the handler tree (in Jetty speak).
-        final ServletContextHandler context = new ServletContextHandler(server, "/");
-
-        // Setup RESTEasy's HttpServletDispatcher at "/api/*".
-        final ServletHolder restEasyServlet = new ServletHolder(new HttpServletDispatcher());
-        restEasyServlet.setInitParameter("resteasy.servlet.mapping.prefix", SERVER_PATH_PREFIX + chordAddressInt + "/");
-        restEasyServlet.setInitParameter("javax.ws.rs.Application", ComputationApp.class.getCanonicalName());
-        context.addServlet(restEasyServlet,  SERVER_PATH_PREFIX + "/" + chordAddressInt + "/*");
-
-        // Setup the DefaultServlet at "/".
-        final ServletHolder defaultServlet = new ServletHolder(new DefaultServlet());
-        context.addServlet(defaultServlet, "/");
-
-        server.setHandler(context);
-
-        System.out.println("Server registered: " + SERVER_PORT + "for node " + chordAddressInt);
         try {
+            singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
+
+            Server server = new Server(SERVER_PORT);
+
+            // Setup the basic Application "context" at "/".
+            // This is also known as the handler tree (in Jetty speak).
+            final ServletContextHandler context = new ServletContextHandler(server, "/");
+
+            // Setup RESTEasy's HttpServletDispatcher at "/api/*".
+            final ServletHolder restEasyServlet = new ServletHolder(new HttpServletDispatcher());
+            restEasyServlet.setInitParameter("resteasy.servlet.mapping.prefix", SERVER_PATH_PREFIX + chordAddressInt + "/");
+            restEasyServlet.setInitParameter("javax.ws.rs.Application", ComputationApp.class.getCanonicalName());
+            context.addServlet(restEasyServlet,  SERVER_PATH_PREFIX + "/" + chordAddressInt + "/*");
+
+            // Setup the DefaultServlet at "/".
+            final ServletHolder defaultServlet = new ServletHolder(new DefaultServlet());
+            context.addServlet(defaultServlet, "/");
+
+            server.setHandler(context);
+
+            System.out.println("Server registered: " + SERVER_PORT + " for node " + chordAddressInt);
+
             // Start server
 			server.start();
 			server.join();
 		} catch (Exception e) {
+            System.out.println("Server not registered: " + SERVER_PORT + " for node " + chordAddressInt + e);
 			e.printStackTrace();
 		}
     }

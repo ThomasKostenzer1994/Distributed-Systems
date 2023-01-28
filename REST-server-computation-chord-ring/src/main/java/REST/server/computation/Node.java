@@ -13,6 +13,7 @@ public class Node {
         this.nodeId = nodeId;
         this.fingers = new Finger[numberOfFingers];
         for (int i = 0; i < numberOfFingers; i++) {
+            this.fingers[i] = new Finger();
             this.fingers[i].setStart((nodeId + (int)Math.pow(2, i)) % (int)Math.pow(2, numberOfFingers));
         }
 
