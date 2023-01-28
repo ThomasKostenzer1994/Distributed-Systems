@@ -83,7 +83,7 @@ public class ComputationApp extends Application {
         // Create singleton of the computation service
         String additionalText = firstNode ? " and is the first node" : " and uses node " + chordNodeInt;
         System.out.println("Starting computation service of node " + chordAddressInt + additionalText);
-        singletons.add(new ComputationService(SERVER_PATH_PREFIX, SERVER_PORT));
+        singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
 
         Server server = new Server(SERVER_PORT);
 
