@@ -21,6 +21,7 @@ public class ComputationService implements ComputationServiceInterface {
     }
 
     private void join(int n, boolean isFirstNode) {
+        System.out.println(node.getNodeId() + " calls join with: " + n + ", " + isFirstNode);
         if (isFirstNode) {
             for (int i = 0; i < node.getNumberOfFingers(); i++) {
                 node.fingers[i].setNode(node.getNodeId());
@@ -36,6 +37,7 @@ public class ComputationService implements ComputationServiceInterface {
 
     private void init_finger_table(int n) {
         try {
+            System.out.println(node.getNodeId() + " calls init_finger_table with: " + n);
             ComputationServiceInterface proxy = createProxyObject(n);
             String proxyReturn = proxy.find_successor(node.fingers[0].getStart());
             node.fingers[0].setNode(Integer.parseInt(proxyReturn));
@@ -63,6 +65,7 @@ public class ComputationService implements ComputationServiceInterface {
 
     private void update_others() {
         try {
+            System.out.println(node.getNodeId() + " calls update_others");
             for (int i = 0; i < node.getNumberOfFingers(); i++) {
                 int p = Integer.parseInt(find_predecessor(node.getNodeId() - (int)Math.pow(2, i)));
                 ComputationServiceInterface proxy = createProxyObject(p);
@@ -77,6 +80,7 @@ public class ComputationService implements ComputationServiceInterface {
     @Override
     public String find_successor(int id) {
         try {
+            System.out.println(node.getNodeId() + " calls find_successor with: " + id);
             String proxyReturn = find_predecessor(id);
             ComputationServiceInterface proxy = createProxyObject(Integer.parseInt(proxyReturn));
             return proxy.getSuccessor();
@@ -90,6 +94,7 @@ public class ComputationService implements ComputationServiceInterface {
     @Override
     public String find_predecessor(int id) {
         try {
+            System.out.println(node.getNodeId() + " calls find_predecessor with: " + id);
             int tempNodeId = node.getNodeId();
             ComputationServiceInterface proxy = createProxyObject(tempNodeId);
             while (!isInInterval(id, true, tempNodeId, false, Integer.parseInt(proxy.getSuccessor()))) {
@@ -107,6 +112,7 @@ public class ComputationService implements ComputationServiceInterface {
 
     @Override
     public String closest_preceding_finger(int id) {
+        System.out.println(node.getNodeId() + " calls closest_preceding_finger with: " + id);
         for (int i = node.getNumberOfFingers() - 1; i >= 0 ; i--) {
             if (isInInterval(node.fingers[i].getNode(), true, node.getNodeId(), true, id)) {
                 return Integer.toString(node.fingers[i].getNode());
@@ -118,21 +124,26 @@ public class ComputationService implements ComputationServiceInterface {
 
     @Override
     public String getSuccessor() {
+        System.out.println(node.getNodeId() + " calls getSuccessor");
         return Integer.toString(node.getSuccessor());
     }
 
     @Override
     public String getPredecessor() {
+        System.out.println(node.getNodeId() + " calls getPredecessor");
         return Integer.toString(node.getPredecessor());
     }
 
     @Override
     public void setPredecessor(int id) {
+        System.out.println(node.getNodeId() + " calls setPredecessor with: " + id);
         node.setPredecessor(id);
     }
 
     @Override
     public void update_finger_table(int s, int i) {
+        System.out.println(node.getNodeId() + " calls update_finger_table with: " + s + ", " + i);
+
         try {
             if (isInInterval(s, false, node.getNodeId(), true, node.fingers[i].getNode())) {
                 node.fingers[i].setNode(s);
@@ -148,13 +159,15 @@ public class ComputationService implements ComputationServiceInterface {
 
     @Override
     public String sendMessage(String key, String message) {
+        System.out.println(node.getNodeId() + " calls sendMessage with: " + key + ", " + message);
         return null;
     }
 
     public ComputationServiceInterface createProxyObject(int node) {
         // Create client
         ResteasyClient client = new ResteasyClientBuilder().build();
-        ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://localhost:" + serverPort + serverPathPrefix + "/" + node));
+        //ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://localhost:" + serverPort + serverPathPrefix + "/" + node));
+        ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://chord_node" + node + "_1:" + serverPort + serverPathPrefix + "/" + node));
         return target.proxy(ComputationServiceInterface.class);
     }
 

@@ -1,0 +1,18 @@
+services:
+  node5:
+    image: mars.mci4me.at:5000/ds-student/thk-chord-node
+    volumes:
+      - ./servicelog-chord-node:/var/log/
+    environment:
+      - CHORD_ADDRESS=5
+      
+  node15:
+    image: mars.mci4me.at:5000/ds-student/thk-chord-node
+    volumes:
+      - ./servicelog-chord-node1:/var/log/
+    environment:
+      - CHORD_ADDRESS=15
+      - CHORD_NODE=5
+    depends_on:
+      - "node5"
+      

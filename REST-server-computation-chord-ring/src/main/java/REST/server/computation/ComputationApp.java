@@ -83,7 +83,7 @@ public class ComputationApp extends Application {
         System.out.println("Starting computation service of node " + chordAddressInt + additionalText);
 
         try {
-            singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
+            //singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
 
             Server server = new Server(SERVER_PORT);
 
@@ -107,7 +107,11 @@ public class ComputationApp extends Application {
 
             // Start server
 			server.start();
-			server.join();
+
+            singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
+
+
+            server.join();
 		} catch (Exception e) {
             System.out.println("Server not registered: " + SERVER_PORT + " for node " + chordAddressInt + e);
 			e.printStackTrace();
