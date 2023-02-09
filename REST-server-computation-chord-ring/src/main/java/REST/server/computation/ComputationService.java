@@ -5,7 +5,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.UriBuilder;
+import java.net.UnknownHostException;
 
 @Path("/computationservice")
 public class ComputationService implements ComputationServiceInterface {
@@ -17,6 +17,8 @@ public class ComputationService implements ComputationServiceInterface {
         ComputationService.serverPathPrefix = serverPathPrefix;
         ComputationService.serverPort = serverPort;
         this.node = new Node(numberOfFingers, nodeId);
+        System.out.println("Nodetest:");
+        System.out.println("Node: " + this.node);
         join(knownChordNode, isFirstNode);
     }
 
@@ -30,6 +32,11 @@ public class ComputationService implements ComputationServiceInterface {
             node.setPredecessor(node.getNodeId());
         }
         else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             init_finger_table(n);
             update_others();
         }
@@ -58,7 +65,8 @@ public class ComputationService implements ComputationServiceInterface {
             return;
         }
         catch (Exception e) {
-            System.err.println("Error in init_finger_table." + e);
+            System.err.println("Error in init_finger_table.");
+            e.printStackTrace();
             return;
         }
     }
@@ -74,6 +82,7 @@ public class ComputationService implements ComputationServiceInterface {
         }
         catch (Exception e) {
             System.err.println("Error in update_others." + e);
+            e.printStackTrace();
         }
     }
 
@@ -87,6 +96,7 @@ public class ComputationService implements ComputationServiceInterface {
         }
         catch (Exception e) {
             System.err.println("Error in find_successor." + e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -106,6 +116,7 @@ public class ComputationService implements ComputationServiceInterface {
         }
         catch (Exception e) {
             System.err.println("Error in find_predecessor." + e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -154,6 +165,7 @@ public class ComputationService implements ComputationServiceInterface {
         }
         catch (Exception e) {
             System.err.println("Error in update_finger_table." + e);
+            e.printStackTrace();
         }
     }
 
@@ -163,24 +175,37 @@ public class ComputationService implements ComputationServiceInterface {
         return null;
     }
 
-    public ComputationServiceInterface createProxyObject(int node) {
+    public ComputationServiceInterface createProxyObject(int id) throws UnknownHostException {
         // Create client
+        //String path = "http://chord_node" + id + "_1:" + serverPort + serverPathPrefix + "/" + id;
+        //String path = "http://localhost:" + (8081 + id) + serverPathPrefix + "/";
+        //String path = "http://node" + id + serverPathPrefix + "/";
+        String path = "http://node" + id + ":8989" + serverPathPrefix;
+
+        //String path = "http://" + ip.getHostAddress() + ":8989" + serverPathPrefix;
+
+
+        System.out.println(node.getNodeId() + " calls createProxyObject with path: " + path);
         ResteasyClient client = new ResteasyClientBuilder().build();
-        //ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://localhost:" + serverPort + serverPathPrefix + "/" + node));
-        ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://chord_node" + node + "_1:" + serverPort + serverPathPrefix + "/" + node));
+        //ResteasyWebTarget target = client.target(UriBuilder.fromPath("http://localhost:" + serverPort + serverPathPrefix + "/" + id));
+        //ResteasyWebTarget target = client.target(UriBuilder.fromPath(path));
+        ResteasyWebTarget target = client.target(path);
         return target.proxy(ComputationServiceInterface.class);
     }
 
     private boolean isInInterval(int value, boolean includingStart, int start, boolean includingEnd, int end) {
+        boolean returnValue = false;
         if (start <= end) {
-            return includingStart ? start <= value : start < value && (includingEnd ? value <= end : value < end);
+            returnValue = includingStart ? start <= value : start < value && (includingEnd ? value <= end : value < end);
         }
         else {
             if (includingStart ? start <= value : start < value || includingEnd ? value <= end : value < end) {
-                return true;
+                returnValue = true;
             }
         }
 
-        return false;
+        String interval = includingStart ? "(" : "[" + start + "," + end + (includingEnd ? ")" : "]");
+        System.out.println(node.getNodeId() + " calls isInInterval with: " + value + " is element of " + interval + ", returns" + returnValue);
+        return returnValue;
     }
 }

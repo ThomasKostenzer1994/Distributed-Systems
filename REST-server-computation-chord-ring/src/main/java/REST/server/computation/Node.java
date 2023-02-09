@@ -21,6 +21,8 @@ public class Node {
         for (int i = 0; i < numberOfFingers - 1; i++) {
             this.fingers[i].setEnd(this.fingers[i + 1].getStart());
         }
+
+        System.out.println("Node: " + this);
     }
 
     public int getPredecessor() {
@@ -41,6 +43,21 @@ public class Node {
 
     public int getNumberOfFingers() {
         return numberOfFingers;
+    }
+
+    @Override
+    public String toString() {
+        String fingersAsString = "";
+        for (int i = 0; i < numberOfFingers - 1; i++) {
+            fingersAsString += "[" + fingers[i].getStart() + "," + fingers[i+1].getStart() + "), node: " + fingers[i].getNode() + System.lineSeparator();
+        }
+
+        fingersAsString += "[" + fingers[numberOfFingers - 1].getStart() + "," + fingers[0].getStart() + "), node: " + fingers[numberOfFingers - 1].getNode() + System.lineSeparator();
+
+        return "Node address: " + nodeId + System.lineSeparator() +
+                "Successor: " + getSuccessor() + System.lineSeparator() +
+                "Predecessor: " + getPredecessor() + System.lineSeparator() +
+                "FingerTable:" + System.lineSeparator() + fingersAsString;
     }
 }
 

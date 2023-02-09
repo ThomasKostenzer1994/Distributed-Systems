@@ -14,10 +14,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+// Assignment for Michael Karbasch, Stefan Dobler and Thomas Kostenzer
 
 public class ComputationApp extends Application {
 
-    final static int SERVER_PORT = 8989;
+    //final static int SERVER_PORT = 8989;
     static final String SERVER_PATH_PREFIX = "/api";
     private static Set<Object> singletons = new HashSet<>();
  
@@ -85,7 +86,7 @@ public class ComputationApp extends Application {
         try {
             //singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
 
-            Server server = new Server(SERVER_PORT);
+            Server server = new Server(8989);
 
             // Setup the basic Application "context" at "/".
             // This is also known as the handler tree (in Jetty speak).
@@ -93,9 +94,9 @@ public class ComputationApp extends Application {
 
             // Setup RESTEasy's HttpServletDispatcher at "/api/*".
             final ServletHolder restEasyServlet = new ServletHolder(new HttpServletDispatcher());
-            restEasyServlet.setInitParameter("resteasy.servlet.mapping.prefix", SERVER_PATH_PREFIX + chordAddressInt + "/");
+            restEasyServlet.setInitParameter("resteasy.servlet.mapping.prefix", SERVER_PATH_PREFIX);
             restEasyServlet.setInitParameter("javax.ws.rs.Application", ComputationApp.class.getCanonicalName());
-            context.addServlet(restEasyServlet,  SERVER_PATH_PREFIX + "/" + chordAddressInt + "/*");
+            context.addServlet(restEasyServlet,  SERVER_PATH_PREFIX + "/*");
 
             // Setup the DefaultServlet at "/".
             final ServletHolder defaultServlet = new ServletHolder(new DefaultServlet());
@@ -103,17 +104,17 @@ public class ComputationApp extends Application {
 
             server.setHandler(context);
 
-            System.out.println("Server registered: " + SERVER_PORT + " for node " + chordAddressInt);
+            System.out.println("Server registered: " + (8081 + chordAddressInt) + " for node " + chordAddressInt);
 
             // Start server
 			server.start();
 
-            singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, SERVER_PORT));
+            singletons.add(new ComputationService(chordAddressInt, firstNode, chordNodeInt, 5, SERVER_PATH_PREFIX, 8081 + chordAddressInt));
 
 
             server.join();
 		} catch (Exception e) {
-            System.out.println("Server not registered: " + SERVER_PORT + " for node " + chordAddressInt + e);
+            System.out.println("Server not registered: " + (8081 + chordAddressInt) + " for node " + chordAddressInt + e);
 			e.printStackTrace();
 		}
     }
