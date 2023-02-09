@@ -47,11 +47,30 @@ public interface ComputationServiceInterface {
     @POST
     @Path("/update_finger_table")
     @Produces({ MediaType.APPLICATION_JSON })
-    // Summary
+    // Updating the finger table.
     public void update_finger_table(@QueryParam("s") int s, @QueryParam("i") int i);
 
     @GET
     @Path("/sendMessage")
     @Produces({ MediaType.APPLICATION_JSON })
+    // Sending a message by finding the optimal path.
     public String sendMessage(@QueryParam("key") String key, @QueryParam("message") String message);
+
+    @GET
+    @Path("/add")
+    @Produces({ MediaType.APPLICATION_JSON })
+    // Adding a key value pair by finding the optimal path.
+    public String add(@QueryParam("value") String value);
+
+    @GET
+    @Path("/get")
+    @Produces({ MediaType.APPLICATION_JSON })
+    // Getting a value by finding the optimal path.
+    public String get(@QueryParam("key") String key);
+
+    @GET
+    @Path("/remove")
+    @Produces({ MediaType.APPLICATION_JSON })
+    // Removing a key value pair by finding the optimal path.
+    public String remove(@QueryParam("key") String key);
 }

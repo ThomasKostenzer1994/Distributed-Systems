@@ -6,12 +6,14 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.ws.rs.Path;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 @Path("/computationservice")
 public class ComputationService implements ComputationServiceInterface {
     private static String serverPathPrefix;
     private static int serverPort;
     private final Node node;
+    private static HashMap<Integer, String> myHashMap = new HashMap<>();
 
     public ComputationService(int nodeId, boolean isFirstNode, int knownChordNode, int numberOfFingers, String serverPathPrefix, int serverPort) {
         ComputationService.serverPathPrefix = serverPathPrefix;
@@ -171,7 +173,105 @@ public class ComputationService implements ComputationServiceInterface {
 
     @Override
     public String sendMessage(String key, String message) {
-        System.out.println(node.getNodeId() + " calls sendMessage with: " + key + ", " + message);
+        System.out.println(node.getNodeId() + " calls sendMessage with key: " + key + " and message: " + message);
+        try {
+            int intKey = Integer.parseInt(key);
+            if (isInInterval(intKey, false, node.getPredecessor(), true, node.getNodeId())) {
+                // Node found
+                System.out.println(node.getNodeId() + " got message: " + message);
+            }
+            else {
+                String foundNode = find_successor(intKey);
+                ComputationServiceInterface proxy = createProxyObject(Integer.parseInt(foundNode));
+                return proxy.sendMessage(key, message);
+            }
+        }
+        catch (Exception e) {
+            System.err.println("Error in sendMessage." + e);
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public String add(String value) {
+        System.out.println(node.getNodeId() + " calls add with: " + value);
+        try {
+            int key = createHashCode(value);
+            if (isInInterval(key, false, node.getPredecessor(), true, node.getNodeId())) {
+                // Node found
+                System.out.println(node.getNodeId() + " adds value: " + value);
+                myHashMap.put(key, value);
+            }
+            else {
+                String foundNode = find_successor(key);
+                ComputationServiceInterface proxy = createProxyObject(Integer.parseInt(foundNode));
+                return proxy.add(value);
+            }
+        }
+        catch (Exception e) {
+            System.err.println("Error in add." + e);
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public String get(String key) {
+        System.out.println(node.getNodeId() + " calls get with: " + key);
+
+        try {
+            int intKey = Integer.parseInt(key);
+            if (isInInterval(intKey, false, node.getPredecessor(), true, node.getNodeId())) {
+                // Node found
+                System.out.println(node.getNodeId() + " get value of key: " + intKey);
+                if (myHashMap.containsKey(intKey)) {
+                    return myHashMap.get(intKey);
+                }
+                else {
+                    return node.getNodeId() + " does not contain key: " + intKey;
+                }
+            }
+            else {
+                String foundNode = find_successor(intKey);
+                ComputationServiceInterface proxy = createProxyObject(Integer.parseInt(foundNode));
+                return proxy.get(key);
+            }
+        }
+
+        catch (Exception e) {
+            System.err.println("Error in get." + e);
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public String remove(String key) {
+        System.out.println(node.getNodeId() + " calls remove with: " + key);
+
+        try {
+            int intKey = Integer.parseInt(key);
+            if (isInInterval(intKey, false, node.getPredecessor(), true, node.getNodeId())) {
+                // Node found
+                System.out.println(node.getNodeId() + " removes key: " + intKey);
+                myHashMap.remove(intKey);
+            }
+            else {
+                String foundNode = find_successor(intKey);
+                ComputationServiceInterface proxy = createProxyObject(Integer.parseInt(foundNode));
+                return proxy.remove(key);
+            }
+        }
+
+        catch (Exception e) {
+            System.err.println("Error in remove." + e);
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -207,5 +307,11 @@ public class ComputationService implements ComputationServiceInterface {
         String interval = includingStart ? "(" : "[" + start + "," + end + (includingEnd ? ")" : "]");
         System.out.println(node.getNodeId() + " calls isInInterval with: " + value + " is element of " + interval + ", returns" + returnValue);
         return returnValue;
+    }
+
+    private int createHashCode(String value) {
+        int key = value.hashCode() % (int)Math.pow(2, node.getNumberOfFingers());
+        System.out.println(node.getNodeId() + " calls createHashCode returns: " + key);
+        return key;
     }
 }
